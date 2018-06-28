@@ -47,6 +47,54 @@ describe('Fullccnum', function() {
     });
   });
 
+  describe('truncateCVV', function() {
+    describe('given an empty input', function() {
+      it('should return the same empty input', function() {
+        should.not.exist(Fullccnum.truncateCVV());   // Returned null
+        should.not.exist(Fullccnum.truncateCVV(null));   // Returned null
+        Fullccnum.truncateCVV('').should.eql('');
+      });
+    });
+
+    describe('given an input of too many digits', function() {
+      it('should return the input string with four chars', function() {
+        Fullccnum.truncateCVV('123456789').should.eql('1234');
+      });
+    });
+
+    describe('given a numeric input', function() {
+      it('should return the input as a string with four chars', function() {
+        Fullccnum.truncateCVV(123456789).should.eql('1234');
+      });
+    });
+
+    describe('given a boolean input', function() {
+      it('should return the input as given', function() {
+        Fullccnum.truncateCVV(true).should.be.true;
+      });
+    });
+
+    describe('given an input with only non-digits', function() {
+      it('should return an empty string', function() {
+        Fullccnum.truncateCVV('Ab,.').should.eql('Ab,.');
+      });
+    });
+
+    describe('given an input of digits and other characters', function() {
+      it('should return a string of only the digits', function() {
+        Fullccnum.truncateCVV('!12A3&4 567-8a9').should.eql('!12A');
+      });
+    });
+  });
+
+
+  describe('cardNumbersInText', function() {
+    it('should find the card number but not the tx', function() {
+      const sampleText = '<card>348771682068975</card><txid>41111111111111111111</txid><unrelated>4111111111111112</unrelated>';
+      Fullccnum.cardNumbersInText(sampleText).should.eql(['348771682068975']);
+    })
+  });
+
   describe('validate', function() {
     describe('length', function() {
       describe('a valid 16-digit number', function() {
